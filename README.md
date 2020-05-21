@@ -3,26 +3,30 @@
 
 Try out the demo <a href="https://daniellochner.itch.io/unity3d-assets">here</a>!
 
-Features:
-• Easy to use and highly customizable.
-• Mouse (desktop) and touch (mobile) support.
-• Specify restrictions for the minimum and maximum zoom.
-• Zoom on the pointer (mouse/finger) or pre-defined custom position on the screen.
-• Use clamped/elastic zoom types when zooming.
-• Define whether to transform the scale or size (width/height) should when zooming.
-• Assign different zoom controls (buttons, sliders, zoom views etc.).
-• Determine whether movement should be restricted when zooming.
-• Allow users to double-tap to fully zoom in/out depending on the current zoom.
-• Adjust the button/scroll-wheel increment and smoothing.
-• … and much more!
+<b><u>Features:</u></b>
+<ul>
+ <l>Easy to use and highly customizable.</l>
+ <l>Mouse (desktop) and touch (mobile) support.</l>
+ <l>Specify restrictions for the minimum and maximum zoom.</l>
+ <l>Zoom on the pointer (mouse/finger) or pre-defined custom position on the screen.</l>
+ <l>Use clamped/elastic zoom types when zooming.</l>
+ <l>Define whether to transform the scale or size (width/height) should when zooming.</l>
+ <l>Assign different zoom controls (buttons, sliders, zoom views etc.).</l>
+ <l>Determine whether movement should be restricted when zooming.</l>
+ <l>Allow users to double-tap to fully zoom in/out depending on the current zoom.</l>
+ <l>Adjust the button/scroll-wheel increment and smoothing.</l>
+ <l>… and much more!</l>
+</ul>
 
-Included:
-• Two example projects (Photo Viewer, World Map)
-• Ready-to-use prefabs (Zoom, Zoom View)
-• In-depth offline documentation
+<b><u>Included:</u></b>
+<ul>
+ <l>Two example projects (Photo Viewer, World Map).</l>
+ <l>Ready-to-use prefabs (Zoom, Zoom View).</l>
+ <l>In-depth offline documentation.</l>
+</ul>
 
-Contact:
+<b><u>Contact:</u></b>
 In the event you are unable to find the information you are looking for or have found a bug, please feel free to send me an email (daniel@daniellochner.com) and I will get back to you as soon as possible.
 
-Support:
+<b><u>Support:</u></b>
 This asset is 100% free, so please support development, and leave a review if you've found the asset helpful! If you'd like to support me, consider subscribing to my YouTube channel <a href="https://youtube.com/c/daniellochner">here</a>, where I post videos logging the progress of the new game I'm developing! :)
