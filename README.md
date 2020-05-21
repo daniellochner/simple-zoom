@@ -1,7 +1,7 @@
 # Simple-Zoom
  “Simple Zoom” allows for developers to easily implement ScrollView zooming functionality to their desktop and/or mobile applications through the use of the scroll-wheel and/or pinch-to-zoom gestures.
 
-Try out the demo <a ref="https://daniellochner.itch.io/unity3d-assets">here</a>!
+Try out the demo <a href="https://daniellochner.itch.io/unity3d-assets">here</a>!
 
 Features:
 • Easy to use and highly customizable.
@@ -25,4 +25,4 @@ Contact:
 In the event you are unable to find the information you are looking for or have found a bug, please feel free to send me an email (daniel@daniellochner.com) and I will get back to you as soon as possible.
 
 Support:
-This asset is 100% free, so please support development, and leave a review if you've found the asset helpful! If you'd like to support me, consider subscribing to my YouTube channel here, where I post videos logging the progress of the new game I'm developing! :)
+This asset is 100% free, so please support development, and leave a review if you've found the asset helpful! If you'd like to support me, consider subscribing to my YouTube channel <a href="https://youtube.com/c/daniellochner">here</a>, where I post videos logging the progress of the new game I'm developing! :)
