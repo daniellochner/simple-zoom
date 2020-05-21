@@ -1,5 +1,7 @@
-<h>Simple Zoom</h>
+<h1>Simple Zoom</h1>
 “Simple Zoom” allows for developers to easily implement ScrollView zooming functionality to their desktop and/or mobile applications through the use of the scroll-wheel and/or pinch-to-zoom gestures.
+
+<img src="https://assetstorev1-prd-cdn.unity3d.com/key-image/85e4c7d8-ff17-479e-ba81-9dcba5bb6a09.webp"></img>
 
 Try out the demo <a href="https://daniellochner.itch.io/unity3d-assets">here</a>!
 
