@@ -1,32 +1,26 @@
-<h1>Simple Zoom</h1>
-<i>“Simple Zoom” allows for developers to easily implement ScrollView zooming functionality to their desktop and/or mobile applications through the use of the scroll-wheel and/or pinch-to-zoom gestures.</i>
+<h1 align="middle">Simple Zoom</h1>
+<p align="middle">
+  <img src="https://user-images.githubusercontent.com/37551307/145618970-7aa6c97b-fe5c-49ec-be4c-00a596a5e945.jpg" width="100%">
+</p>
+<p align="middle">"Simple Zoom" allows for developers to easily implement ScrollView zooming functionality to their desktop and/or mobile applications through the use of the scroll-wheel and/or pinch-to-zoom gestures.</p>
+<p align="middle">Try out the demo <a href="https://daniellochner.itch.io/unity3d-assets">here</a>.
 
-Try out the demo <a href="https://daniellochner.itch.io/unity3d-assets">here</a>!
+## Features:
+- Easy to use and highly customizable.
+- Mouse (desktop) and touch (mobile) support.
+- Specify restrictions for the minimum and maximum zoom.
+- Use clamped/elastic zoom types when zooming.
+- Define whether to transform the scale or size (width/height) should when zooming.
+- Assign different zoom controls (buttons, sliders, zoom views etc.).
+- Determine whether movement should be restricted when zooming.
+- Allow users to double-tap to fully zoom in/out depending on the current zoom.
+- Adjust the button/scroll-wheel increment and smoothing.
+- ... and much more!
 
-<h2>Features:</h2>
-<ul>
- <li>Easy to use and highly customizable.</li>
- <li>Mouse (desktop) and touch (mobile) support.</li>
- <li>Specify restrictions for the minimum and maximum zoom.</li>
- <li>Zoom on the pointer (mouse/finger) or pre-defined custom position on the screen.</li>
- <li>Use clamped/elastic zoom types when zooming.</l>
- <li>Define whether to transform the scale or size (width/height) should when zooming.</li>
- <li>Assign different zoom controls (buttons, sliders, zoom views etc.).</li>
- <li>Determine whether movement should be restricted when zooming.</l>
- <li>Allow users to double-tap to fully zoom in/out depending on the current zoom.</li>
- <li>Adjust the button/scroll-wheel increment and smoothing.</li>
- <li>… and much more!</l>
-</ul>
+## Included:
+- Two example projects (Photo Viewer, World Map).
+- Ready-to-use prefabs (Zoom, Zoom View).
+- In-depth offline documentation.
 
-<h2>Included:</h2>
-<ul>
- <li>Two example projects (Photo Viewer, World Map).</li>
- <li>Ready-to-use prefabs (Zoom, Zoom View).</li>
- <li>In-depth offline documentation.</li>
-</ul>
-
-<h2>Contact:</h2>
-In the event you are unable to find the information you are looking for or have found a bug, please feel free to send me an email (daniel@daniellochner.com) and I will get back to you as soon as possible.
-
-<h2>Support:</h2>
-This asset is 100% free, so please support development, and leave a review if you've found the asset helpful! If you'd like to support me, consider subscribing to my YouTube channel <a href="https://youtube.com/c/daniellochner">here</a>, where I post videos logging the progress of the new game I'm developing! :)
+## Help:
+In the event you are unable to find the information you are looking for or have found a bug, please raise an issue here or post a question in the [Discord server](https://discord.gg/sJysbdu).
