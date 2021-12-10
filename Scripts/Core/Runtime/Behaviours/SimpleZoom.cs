@@ -13,33 +13,34 @@ namespace DanielLochner.Assets.SimpleZoom
     public class SimpleZoom : MonoBehaviour, IPointerClickHandler
     {
         #region Fields
-        // Basic.
-        public float currentZoom = 1f;
-        public float minZoom = 1f;
-        public float maxZoom = 3f;
-        public ZoomTarget zoomTarget = ZoomTarget.Pointer;
-        public Vector2 customPosition = new Vector2(0.5f, 0.5f);
-        public ZoomType zoomType = ZoomType.Clamped;
-        public float elasticLimit = 2f;
-        public float elasticDamping = 0.1f;
-        public ZoomMode zoomMode = ZoomMode.Scale;
-        // Control.
-        public Button zoomIn = null;
-        public Vector2 zoomInPosition = new Vector2(0.5f, 0.5f);
-        public float zoomInIncrement = 0.5f;
-        public float zoomInSmoothing = 0.1f;
-        public Button zoomOut = null;
-        public Vector2 zoomOutPosition = new Vector2(0.5f, 0.5f);
-        public float zoomOutIncrement = 0.5f;
-        public float zoomOutSmoothing = 0.1f;
-        public Slider zoomSlider = null;
-        public GameObject zoomView = null;
-        // Other.
-        public bool zoomMovement = true;
-        public bool doubleTap = true;
-        public float doubleTapTargetTime = 0.25f;
-        public float scrollWheelIncrement = 0.5f;
-        public float scrollWheelSmoothing = 0.1f;
+        // Basic Settings
+        [SerializeField] private float currentZoom = 1f;
+        [SerializeField] private MinMax minMaxZoom = new MinMax(1, 3);
+        [SerializeField] private ZoomTarget zoomTarget = ZoomTarget.Pointer;
+        [SerializeField] private Vector2 customPosition = new Vector2(0.5f, 0.5f);
+        [SerializeField] private ZoomType zoomType = ZoomType.Clamped;
+        [SerializeField] private float elasticLimit = 2f;
+        [SerializeField] private float elasticDamping = 0.1f;
+        [SerializeField] private ZoomMode zoomMode = ZoomMode.Scale;
+
+        // Control Settings
+        [SerializeField] private Button zoomInButton = null;
+        [SerializeField] private Vector2 zoomInPosition = new Vector2(0.5f, 0.5f);
+        [SerializeField] private float zoomInIncrement = 0.5f;
+        [SerializeField] private float zoomInSmoothing = 0.1f;
+        [SerializeField] private Button zoomOutButton = null;
+        [SerializeField] private Vector2 zoomOutPosition = new Vector2(0.5f, 0.5f);
+        [SerializeField] private float zoomOutIncrement = 0.5f;
+        [SerializeField] private float zoomOutSmoothing = 0.1f;
+        [SerializeField] private Slider zoomSlider = null;
+        [SerializeField] private GameObject zoomView = null;
+
+        // Other Settings
+        [SerializeField] private bool zoomMovement = true;
+        [SerializeField] private bool doubleTap = true;
+        [SerializeField] private float doubleTapTargetTime = 0.25f;
+        [SerializeField] private float scrollWheelIncrement = 0.5f;
+        [SerializeField] private float scrollWheelSmoothing = 0.1f;
 
         private float initialZoom = 1f, currentDistance = 1f, initialDistance = 1f, doubleTapTime, targetSmoothing, zoomViewScale;
         private bool isInitialTouch = true;
@@ -51,6 +52,117 @@ namespace DanielLochner.Assets.SimpleZoom
         #endregion
 
         #region Properties
+        public MinMax MinMaxZoom
+        {
+            get => minMaxZoom;
+            set => minMaxZoom = value;
+        }
+        public ZoomTarget ZoomTarget
+        {
+            get => zoomTarget;
+            set => zoomTarget = value;
+        }
+        public Vector2 CustomPosition
+        {
+            get => customPosition;
+            set => customPosition = value;
+        }
+        public ZoomType ZoomType
+        {
+            get => zoomType;
+            set => zoomType = value;
+        }
+        public float ElasticLimit
+        {
+            get => elasticLimit;
+            set => elasticLimit = value;
+        }
+        public float ElasticDamping
+        {
+            get => elasticDamping;
+            set => elasticDamping = value;
+        }
+        public ZoomMode ZoomMode
+        {
+            get => zoomMode;
+            set => zoomMode = value;
+        }
+        public Button ZoomInButton
+        {
+            get => zoomInButton;
+            set => zoomInButton = value;
+        }
+        public Vector2 ZoomInPosition
+        {
+            get => zoomInPosition;
+            set => zoomInPosition = value;
+        }
+        public float ZoomInIncrement
+        {
+            get => zoomInIncrement;
+            set => zoomInIncrement = value;
+        }
+        public float ZoomInSmoothing
+        {
+            get => zoomInSmoothing;
+            set => zoomInSmoothing = value;
+        }
+        public Button ZoomOutButton
+        {
+            get => zoomOutButton;
+            set => zoomOutButton = value;
+        }
+        public Vector2 ZoomOutPosition
+        {
+            get => zoomOutPosition;
+            set => zoomOutPosition = value;
+        }
+        public float ZoomOutIncrement
+        {
+            get => zoomOutIncrement;
+            set => zoomOutIncrement = value;
+        }
+        public float ZoomOutSmoothing
+        {
+            get => zoomOutSmoothing;
+            set => zoomOutSmoothing = value;
+        }
+        public Slider ZoomSlider
+        {
+            get => zoomSlider;
+            set => zoomSlider = value;
+        }
+        public GameObject ZoomView
+        {
+            get => zoomView;
+            set => zoomView = value;
+        }
+        public bool ZoomMovement
+        {
+            get => zoomMovement;
+            set => zoomMovement = value;
+        }
+        public bool DoubleTap
+        {
+            get => doubleTap;
+            set => doubleTap = value;
+        }
+        public float DoubleTapTargetTime
+        {
+            get => doubleTapTargetTime;
+            set => doubleTapTargetTime = value;
+        }
+        public float ScrollWheelIncrement
+        {
+            get => scrollWheelIncrement;
+            set => scrollWheelIncrement = value;
+        }
+        public float ScrollWheelSmoothing
+        {
+            get => scrollWheelSmoothing;
+            set => scrollWheelSmoothing = value;
+        }
+        
         private RectTransform Content
         {
             get { return scrollRect.content; }
@@ -61,16 +173,17 @@ namespace DanielLochner.Assets.SimpleZoom
         }
 
         public float TargetZoom { get; set; } = 1f;
-
         public float CurrentZoom
         {
-            get { return currentZoom; }
+            get => currentZoom;
+            set => currentZoom = value;
         }
+
         public float ZoomProgress
         {
             get
             {
-                return (currentZoom - minZoom) / (maxZoom - minZoom);
+                return (currentZoom - minMaxZoom.min) / (minMaxZoom.max - minMaxZoom.min);
             }
         }
         public Vector4 ZoomMargin
@@ -194,10 +307,10 @@ namespace DanielLochner.Assets.SimpleZoom
             Content.anchorMax = new Vector2(0.5f, 0.5f);
 
             // Zoom Buttons.
-            if (zoomIn != null)
-                zoomIn.onClick.AddListener(delegate { ZoomIn(zoomInPosition, zoomInIncrement, zoomInSmoothing); });
-            if (zoomOut != null)
-                zoomOut.onClick.AddListener(delegate { ZoomOut(zoomOutPosition, zoomOutIncrement, zoomOutSmoothing); });
+            if (zoomInButton != null)
+                zoomInButton.onClick.AddListener(delegate { ZoomIn(zoomInPosition, zoomInIncrement, zoomInSmoothing); });
+            if (zoomOutButton != null)
+                zoomOutButton.onClick.AddListener(delegate { ZoomOut(zoomOutPosition, zoomOutIncrement, zoomOutSmoothing); });
         }
 
         private void OnPivotZoomUpdate()
@@ -275,9 +388,9 @@ namespace DanielLochner.Assets.SimpleZoom
 
                 #region Set Zoom
                 if (zoomType == ZoomType.Clamped){
-                    SetZoom(Mathf.Clamp(initialZoom * (currentDistance / initialDistance), minZoom, maxZoom));
+                    SetZoom(Mathf.Clamp(initialZoom * (currentDistance / initialDistance), minMaxZoom.min, minMaxZoom.max));
                 }else if (zoomType == ZoomType.Elastic){
-                    SetZoom(ElasticClamp(initialZoom * (currentDistance / initialDistance), minZoom, maxZoom, elasticLimit, elasticDamping));
+                    SetZoom(ElasticClamp(initialZoom * (currentDistance / initialDistance), minMaxZoom.min, minMaxZoom.max, elasticLimit, elasticDamping));
                 }
                 scrollRect.horizontal = scrollRect.vertical = zoomMovement;
                 #endregion
@@ -289,10 +402,10 @@ namespace DanielLochner.Assets.SimpleZoom
 
                 if (zoomType == ZoomType.Elastic)
                 {
-                    if (currentZoom > maxZoom){
-                        SetZoom(maxZoom, 0.1f);
-                    }else if (currentZoom < minZoom){
-                        SetZoom(minZoom, 0.1f);
+                    if (currentZoom > minMaxZoom.max){
+                        SetZoom(minMaxZoom.max, 0.1f);
+                    }else if (currentZoom < minMaxZoom.min){
+                        SetZoom(minMaxZoom.min, 0.1f);
                     }
                 }
 
@@ -328,7 +441,7 @@ namespace DanielLochner.Assets.SimpleZoom
                 #endregion
 
                 #region Set Zoom
-                SetZoom(Mathf.Clamp(currentZoom + ((scrollWheel * 10) * scrollWheelIncrement), minZoom, maxZoom), scrollWheelSmoothing);
+                SetZoom(Mathf.Clamp(currentZoom + ((scrollWheel * 10) * scrollWheelIncrement), minMaxZoom.min, minMaxZoom.max), scrollWheelSmoothing);
                 #endregion
             }
         }
@@ -343,10 +456,10 @@ namespace DanielLochner.Assets.SimpleZoom
                 }
                 else if (taps >= 2)
                 {
-                    if (Math.Round(currentZoom, 2) > minZoom)
+                    if (Math.Round(currentZoom, 2) > minMaxZoom.min)
                     {
                         SetPivot(new Vector2(ZoomMargin.x / (ZoomMargin.x + ZoomMargin.y), ZoomMargin.z / (ZoomMargin.z + ZoomMargin.w)));
-                        SetZoom(minZoom, 0.1f);
+                        SetZoom(minMaxZoom.min, 0.1f);
                     }
                     else
                     {
@@ -360,7 +473,7 @@ namespace DanielLochner.Assets.SimpleZoom
                             pivot = new Vector2(x, y);
                         }
                         SetPivot(pivot);
-                        SetZoom(maxZoom, 0.1f);
+                        SetZoom(minMaxZoom.max, 0.1f);
                     }
 
                     taps = 0; // Reset.
@@ -443,7 +556,7 @@ namespace DanielLochner.Assets.SimpleZoom
                 pivot = new Vector2(x, y);
             }
             SetPivot(pivot);
-            SetZoom(Mathf.Clamp(currentZoom + increment, minZoom, maxZoom), smoothing);
+            SetZoom(Mathf.Clamp(currentZoom + increment, minMaxZoom.min, minMaxZoom.max), smoothing);
         }
         public void ZoomOut(Vector2 pivot, float increment, float smoothing)
         {
@@ -454,7 +567,7 @@ namespace DanielLochner.Assets.SimpleZoom
                 pivot = new Vector2(x, y);
             }
             SetPivot(pivot);
-            SetZoom(Mathf.Clamp(currentZoom - increment, minZoom, maxZoom), smoothing);
+            SetZoom(Mathf.Clamp(currentZoom - increment, minMaxZoom.min, minMaxZoom.max), smoothing);
         }
         #endregion
     }
