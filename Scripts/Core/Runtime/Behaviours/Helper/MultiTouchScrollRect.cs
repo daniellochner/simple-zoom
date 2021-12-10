@@ -1,6 +1,5 @@
-﻿// Simple Zoom
-// Version: 1.0.1
-// Author: Daniel Lochner
+﻿// Simple Zoom - https://assetstore.unity.com/packages/tools/gui/simple-zoom-143625
+// Copyright (c) Daniel Lochner
 
 using UnityEngine;
 using UnityEngine.EventSystems;

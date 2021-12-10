@@ -1,6 +1,5 @@
 ﻿// Simple Zoom - https://assetstore.unity.com/packages/tools/gui/simple-zoom-143625
-// Version: 1.0.2
-// Author: Daniel Lochner
+// Copyright (c) Daniel Lochner
 
 using System;
 using UnityEngine;
@@ -106,25 +105,7 @@ namespace DanielLochner.Assets.SimpleZoom
             }
         }
         #endregion
-
-        #region Enumerators
-        public enum ZoomTarget
-        {
-            Pointer,
-            Custom
-        }
-        public enum ZoomType
-        {
-            Clamped,
-            Elastic
-        }
-        public enum ZoomMode
-        {
-            Scale,
-            Size
-        }
-        #endregion
-
+        
         #region Methods
         private void Start()
         {
