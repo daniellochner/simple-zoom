@@ -33,7 +33,7 @@ namespace DanielLochner.Assets.SimpleZoom
         #region Methods
         private void Update()
         {
-            if (SystemInfo.deviceType == DeviceType.Handheld || SimpleZoom.UsingUnityRemote)
+            if (SystemInfo.deviceType == DeviceType.Handheld || UnityRemoteUtility.UsingUnityRemote)
             {
                 if (Input.touchCount > 0)
                 {
@@ -51,7 +51,7 @@ namespace DanielLochner.Assets.SimpleZoom
 
         public override void OnBeginDrag(PointerEventData eventData)
         {
-            if (SystemInfo.deviceType == DeviceType.Handheld || SimpleZoom.UsingUnityRemote)
+            if (SystemInfo.deviceType == DeviceType.Handheld || UnityRemoteUtility.UsingUnityRemote)
             {
                 if (Input.touchCount >= minimumTouchCount && Input.touchCount == initialTouchCount)
                 {
@@ -66,7 +66,7 @@ namespace DanielLochner.Assets.SimpleZoom
         }
         public override void OnDrag(PointerEventData eventData)
         {
-            if (SystemInfo.deviceType == DeviceType.Handheld || SimpleZoom.UsingUnityRemote)
+            if (SystemInfo.deviceType == DeviceType.Handheld || UnityRemoteUtility.UsingUnityRemote)
             {
                 if (Input.touchCount >= minimumTouchCount && Input.touchCount == initialTouchCount)
                 {
@@ -81,7 +81,7 @@ namespace DanielLochner.Assets.SimpleZoom
         }
         public override void OnEndDrag(PointerEventData eventData)
         {
-            if (SystemInfo.deviceType == DeviceType.Handheld || SimpleZoom.UsingUnityRemote)
+            if (SystemInfo.deviceType == DeviceType.Handheld || UnityRemoteUtility.UsingUnityRemote)
             {
                 if (Input.touchCount >= minimumTouchCount)
                 {

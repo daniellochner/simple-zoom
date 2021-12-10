@@ -9,7 +9,7 @@ namespace DanielLochner.Assets.SimpleZoom
     [CanEditMultipleObjects]
     public class SZCopyrightEditor : CopyrightEditor
     {
-        public override string Product => "Simple Side-Menu";
+        public override string Product => "Simple Zoom";
         public override string CopyrightHolder => "Daniel Lochner";
     }
 }

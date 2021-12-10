@@ -14,7 +14,7 @@ namespace DanielLochner.Assets.SimpleZoom
     {
         #region Fields
         // Basic Settings
-        [SerializeField] private float currentZoom = 1f;
+        [SerializeField] private float defaultZoom = 1f;
         [SerializeField] private MinMax minMaxZoom = new MinMax(1, 3);
         [SerializeField] private ZoomTarget zoomTarget = ZoomTarget.Pointer;
         [SerializeField] private Vector2 customPosition = new Vector2(0.5f, 0.5f);
@@ -22,6 +22,7 @@ namespace DanielLochner.Assets.SimpleZoom
         [SerializeField] private float elasticLimit = 2f;
         [SerializeField] private float elasticDamping = 0.1f;
         [SerializeField] private ZoomMode zoomMode = ZoomMode.Scale;
+        [SerializeField] private bool useDoubleTap = true;
 
         // Control Settings
         [SerializeField] private Button zoomInButton = null;
@@ -35,9 +36,8 @@ namespace DanielLochner.Assets.SimpleZoom
         [SerializeField] private Slider zoomSlider = null;
         [SerializeField] private GameObject zoomView = null;
 
-        // Other Settings
-        [SerializeField] private bool zoomMovement = true;
-        [SerializeField] private bool doubleTap = true;
+        // Platform-Specific Settings
+        [SerializeField] private bool restrictZoomMovement = true;
         [SerializeField] private float doubleTapTargetTime = 0.25f;
         [SerializeField] private float scrollWheelIncrement = 0.5f;
         [SerializeField] private float scrollWheelSmoothing = 0.1f;
@@ -52,6 +52,11 @@ namespace DanielLochner.Assets.SimpleZoom
         #endregion
 
         #region Properties
+        public float DefaultZoom
+        {
+            get => defaultZoom;
+            set => defaultZoom = value;
+        }
         public MinMax MinMaxZoom
         {
             get => minMaxZoom;
@@ -86,6 +91,11 @@ namespace DanielLochner.Assets.SimpleZoom
         {
             get => zoomMode;
             set => zoomMode = value;
+        }
+        public bool UseDoubleTap
+        {
+            get => useDoubleTap;
+            set => useDoubleTap = value;
         }
         public Button ZoomInButton
         {
@@ -137,15 +147,10 @@ namespace DanielLochner.Assets.SimpleZoom
             get => zoomView;
             set => zoomView = value;
         }
-        public bool ZoomMovement
+        public bool RestrictZoomMovement
         {
-            get => zoomMovement;
-            set => zoomMovement = value;
-        }
-        public bool DoubleTap
-        {
-            get => doubleTap;
-            set => doubleTap = value;
+            get => restrictZoomMovement;
+            set => restrictZoomMovement = value;
         }
         public float DoubleTapTargetTime
         {
@@ -165,25 +170,54 @@ namespace DanielLochner.Assets.SimpleZoom
         
         private RectTransform Content
         {
-            get { return scrollRect.content; }
+            get => scrollRect.content;
         }
         private RectTransform Viewport
         {
-            get { return scrollRect.viewport; }
+            get => scrollRect.viewport;
         }
 
-        public float TargetZoom { get; set; } = 1f;
+        public float TargetZoom
+        {
+            get;
+            private set;
+        } = 1f;
         public float CurrentZoom
         {
-            get => currentZoom;
-            set => currentZoom = value;
-        }
+            get;
+            private set;
+        } = 1f;
 
         public float ZoomProgress
         {
+            get => (CurrentZoom - minMaxZoom.min) / (minMaxZoom.max - minMaxZoom.min);
+        }
+        private bool IsValidConfig
+        {
             get
             {
-                return (currentZoom - minMaxZoom.min) / (minMaxZoom.max - minMaxZoom.min);
+                bool valid = true;
+                if (canvas.renderMode == RenderMode.ScreenSpaceCamera && canvas.worldCamera == null)
+                {
+                    Debug.LogError("<b>[SimpleZoom]</b> The world camera must be assigned if the render mode has been set to \"Screen Space - Camera\".", gameObject);
+                    valid = false;
+                }
+                if (zoomView != null)
+                {
+                    Vector2 viewportDimensions = Viewport.rect.size;
+                    zoomViewViewport = zoomView.transform.GetChild(0) as RectTransform;
+                    Vector2 zoomViewViewportDimensions = zoomViewViewport.rect.size;
+
+                    Vector2 contentDimensions = Content.rect.size;
+                    Vector2 zoomViewContentDimensions = (zoomView.transform as RectTransform).rect.size;
+
+                    if (Vector2.Distance(viewportDimensions / zoomViewViewportDimensions, contentDimensions / zoomViewContentDimensions) > 0f)
+                    {
+                        Debug.LogError("<b>[SimpleZoom]</b> The Zoom View's dimensions must be SIMILAR (i.e. the ratios of the lengths of their corresponding sides are equal) to that of the Simple Zoom's dimensions.", gameObject);
+                        valid = false;
+                    }
+                }
+                return valid;
             }
         }
         public Vector4 ZoomMargin
@@ -198,33 +232,22 @@ namespace DanielLochner.Assets.SimpleZoom
 
                 float left = (Viewport.localPosition.x - viewportSize.x * viewportPivot.x) - (Content.localPosition.x - contentSize.x * contentPivot.x);
                 float bottom = (Viewport.localPosition.y - viewportSize.y * viewportPivot.y) - (Content.localPosition.y - contentSize.y * contentPivot.y);
-
                 float right = (Content.localPosition.x + contentSize.x * (1 - contentPivot.x)) - (Viewport.localPosition.x + viewportSize.x * (1 - viewportPivot.x));
                 float top = (Content.localPosition.y + contentSize.y * (1 - contentPivot.y)) - (Viewport.localPosition.y + viewportSize.y * (1 - viewportPivot.y));
 
                 return new Vector4(left, right, bottom, top);
             }
         }
-
-        public static bool UsingUnityRemote
-        {
-            get
-            {
-                #if (UNITY_EDITOR)
-                    return UnityEditor.EditorApplication.isRemoteConnected;
-                #else
-                    return false;
-                #endif
-            }
-        }
         #endregion
-        
+
         #region Methods
-        private void Start()
+        private void Awake()
         {
             Initialize();
-
-            if (Validate())
+        }
+        private void Start()
+        {
+            if (IsValidConfig)
             {
                 Setup();
             }
@@ -241,12 +264,12 @@ namespace DanielLochner.Assets.SimpleZoom
             OnZoomView();
             OnDoubleTap();
         }
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         private void OnValidate()
         {
             Initialize();
         }
-        #endif
+#endif
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -259,96 +282,74 @@ namespace DanielLochner.Assets.SimpleZoom
             scrollRect = GetComponent<ScrollRect>();
             canvas = GetComponentInParent<Canvas>();
         }
-        private bool Validate()
-        {
-            bool valid = true;
-
-            if (canvas.renderMode == RenderMode.ScreenSpaceCamera && canvas.worldCamera == null)
-            {
-                Debug.LogError("<b>[SimpleZoom]</b> The world camera must be assigned if the render mode has been set to \"Screen Space - Camera\".", gameObject);
-                valid = false;
-            }
-
-            if (zoomView)
-            {
-                Vector2 viewportDimensions = Viewport.rect.size;
-                zoomViewViewport = zoomView.transform.GetChild(0).GetComponent<RectTransform>();
-                Vector2 zoomViewViewportDimensions = zoomViewViewport.rect.size;
-
-                Vector2 contentDimensions = Content.rect.size;
-                Vector2 zoomViewContentDimensions = zoomView.GetComponent<RectTransform>().rect.size;
-
-                if (Vector2.Distance(viewportDimensions / zoomViewViewportDimensions, contentDimensions / zoomViewContentDimensions) > 0f)
-                {
-                    Debug.LogError("<b>[SimpleZoom]</b> The Zoom View's dimensions must be SIMILAR (i.e. the ratios of the lengths of their corresponding sides are equal) to that of the Simple Zoom's dimensions.", gameObject);
-                    valid = false;
-                }
-            }
-
-            return valid;
-        }
         private void Setup()
         {
-            // Canvas & Camera
+            // Default Zoom
+            CurrentZoom = TargetZoom = defaultZoom;
+
+            // Canvas and Camera
             if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
             {
-                canvas.planeDistance = (canvas.GetComponent<RectTransform>().rect.height / 2f) / Mathf.Tan((canvas.worldCamera.fieldOfView / 2f) * Mathf.Deg2Rad);
+                canvas.planeDistance = ((canvas.transform as RectTransform).rect.height / 2f) / Mathf.Tan((canvas.worldCamera.fieldOfView / 2f) * Mathf.Deg2Rad);
                 if (canvas.worldCamera.farClipPlane < canvas.planeDistance)
                 {
                     canvas.worldCamera.farClipPlane = Mathf.Ceil(canvas.planeDistance);
                 }
             }
 
-            // Content.
+            // Content
             originalSize = Content.rect.size;
             originalScale = Content.localScale;
+            Content.anchorMin = Content.anchorMax = 0.5f * Vector2.one;
 
-            Content.anchorMin = new Vector2(0.5f, 0.5f);
-            Content.anchorMax = new Vector2(0.5f, 0.5f);
-
-            // Zoom Buttons.
+            // Zoom Buttons
             if (zoomInButton != null)
-                zoomInButton.onClick.AddListener(delegate { ZoomIn(zoomInPosition, zoomInIncrement, zoomInSmoothing); });
+            {
+                zoomInButton.onClick.AddListener(() => ZoomIn(zoomInPosition, zoomInIncrement, zoomInSmoothing));
+            }
             if (zoomOutButton != null)
-                zoomOutButton.onClick.AddListener(delegate { ZoomOut(zoomOutPosition, zoomOutIncrement, zoomOutSmoothing); });
+            {
+                zoomOutButton.onClick.AddListener(() => ZoomOut(zoomOutPosition, zoomOutIncrement, zoomOutSmoothing));
+            }
         }
 
         private void OnPivotZoomUpdate()
         {
-            #region Set
-            if (SystemInfo.deviceType == DeviceType.Handheld || UsingUnityRemote){
+            if (SystemInfo.deviceType == DeviceType.Handheld || UnityRemoteUtility.UsingUnityRemote)
+            {
                 OnHandheldUpdate();
-            }else if (SystemInfo.deviceType == DeviceType.Desktop){
+            }
+            else 
+            if (SystemInfo.deviceType == DeviceType.Desktop)
+            {
                 OnDesktopUpdate();
             }
-            #endregion
 
-            #region Update
-            if (Math.Round(currentZoom, 4) != TargetZoom)
+            if (Math.Round(CurrentZoom, 4) != TargetZoom)
             {
                 if (targetSmoothing != 0)
                 {
-                    currentZoom = Mathf.Lerp(currentZoom, TargetZoom, Time.unscaledDeltaTime * (1f / targetSmoothing));
+                    CurrentZoom = Mathf.Lerp(CurrentZoom, TargetZoom, Time.unscaledDeltaTime * (1f / targetSmoothing));
                 }
                 else
                 {
-                    currentZoom = TargetZoom;
+                    CurrentZoom = TargetZoom;
                 }
             }
             else
             {
-                currentZoom = TargetZoom;
+                CurrentZoom = TargetZoom;
             }
 
-            if (zoomMode == ZoomMode.Scale)
+            switch (zoomMode)
             {
-                Content.localScale = originalScale * currentZoom;
+                case ZoomMode.Scale:
+                    Content.localScale = originalScale * CurrentZoom;
+                    break;
+                case ZoomMode.Size:
+                    Content.sizeDelta = originalSize * CurrentZoom;
+                    break;
             }
-            else if (zoomMode == ZoomMode.Size)
-            {
-                Content.sizeDelta = originalSize * currentZoom;
-            }
-            #endregion
         }
         private void OnHandheldUpdate()
         {
@@ -387,24 +388,32 @@ namespace DanielLochner.Assets.SimpleZoom
                 #endregion
 
                 #region Set Zoom
-                if (zoomType == ZoomType.Clamped){
-                    SetZoom(Mathf.Clamp(initialZoom * (currentDistance / initialDistance), minMaxZoom.min, minMaxZoom.max));
-                }else if (zoomType == ZoomType.Elastic){
-                    SetZoom(ElasticClamp(initialZoom * (currentDistance / initialDistance), minMaxZoom.min, minMaxZoom.max, elasticLimit, elasticDamping));
+                switch (zoomType)
+                {
+                    case ZoomType.Clamped:
+                        SetZoom(Mathf.Clamp(initialZoom * (currentDistance / initialDistance), minMaxZoom.min, minMaxZoom.max));
+                        break;
+                    case ZoomType.Elastic:
+                        SetZoom(ElasticClamp(initialZoom * (currentDistance / initialDistance), minMaxZoom.min, minMaxZoom.max, elasticLimit, elasticDamping));
+                        break;
                 }
-                scrollRect.horizontal = scrollRect.vertical = zoomMovement;
+                scrollRect.horizontal = scrollRect.vertical = restrictZoomMovement;
                 #endregion
             }
             else
             {
                 #region Reset Zoom
-                initialZoom = currentZoom;
+                initialZoom = CurrentZoom;
 
                 if (zoomType == ZoomType.Elastic)
                 {
-                    if (currentZoom > minMaxZoom.max){
+                    if (CurrentZoom > minMaxZoom.max)
+                    {
                         SetZoom(minMaxZoom.max, 0.1f);
-                    }else if (currentZoom < minMaxZoom.min){
+                    }
+                    else 
+                    if (CurrentZoom < minMaxZoom.min)
+                    {
                         SetZoom(minMaxZoom.min, 0.1f);
                     }
                 }
@@ -441,13 +450,13 @@ namespace DanielLochner.Assets.SimpleZoom
                 #endregion
 
                 #region Set Zoom
-                SetZoom(Mathf.Clamp(currentZoom + ((scrollWheel * 10) * scrollWheelIncrement), minMaxZoom.min, minMaxZoom.max), scrollWheelSmoothing);
+                SetZoom(Mathf.Clamp(CurrentZoom + ((scrollWheel * 10) * scrollWheelIncrement), minMaxZoom.min, minMaxZoom.max), scrollWheelSmoothing);
                 #endregion
             }
         }
         private void OnDoubleTap()
         {
-            if (doubleTap)
+            if (useDoubleTap)
             {
                 doubleTapTime -= Time.unscaledDeltaTime;
                 if (doubleTapTime <= 0f)
@@ -456,7 +465,7 @@ namespace DanielLochner.Assets.SimpleZoom
                 }
                 else if (taps >= 2)
                 {
-                    if (Math.Round(currentZoom, 2) > minMaxZoom.min)
+                    if (Math.Round(CurrentZoom, 2) > minMaxZoom.min)
                     {
                         SetPivot(new Vector2(ZoomMargin.x / (ZoomMargin.x + ZoomMargin.y), ZoomMargin.z / (ZoomMargin.z + ZoomMargin.w)));
                         SetZoom(minMaxZoom.min, 0.1f);
@@ -491,9 +500,9 @@ namespace DanielLochner.Assets.SimpleZoom
         {
             if (zoomView != null)
             {
-                zoomViewScale = zoomView.GetComponent<RectTransform>().rect.width / (Content.rect.width * Content.localScale.x);
+                zoomViewScale = (zoomView.transform as RectTransform).rect.width / (Content.rect.width * Content.localScale.x);
 
-                zoomViewViewport.offsetMin = zoomViewScale * new Vector2(ZoomMargin.x, ZoomMargin.z);
+                zoomViewViewport.offsetMin =  zoomViewScale * new Vector2(ZoomMargin.x, ZoomMargin.z);
                 zoomViewViewport.offsetMax = -zoomViewScale * new Vector2(ZoomMargin.y, ZoomMargin.w);
             }
         }
@@ -556,7 +565,7 @@ namespace DanielLochner.Assets.SimpleZoom
                 pivot = new Vector2(x, y);
             }
             SetPivot(pivot);
-            SetZoom(Mathf.Clamp(currentZoom + increment, minMaxZoom.min, minMaxZoom.max), smoothing);
+            SetZoom(Mathf.Clamp(CurrentZoom + increment, minMaxZoom.min, minMaxZoom.max), smoothing);
         }
         public void ZoomOut(Vector2 pivot, float increment, float smoothing)
         {
@@ -567,7 +576,7 @@ namespace DanielLochner.Assets.SimpleZoom
                 pivot = new Vector2(x, y);
             }
             SetPivot(pivot);
-            SetZoom(Mathf.Clamp(currentZoom - increment, minMaxZoom.min, minMaxZoom.max), smoothing);
+            SetZoom(Mathf.Clamp(CurrentZoom - increment, minMaxZoom.min, minMaxZoom.max), smoothing);
         }
         #endregion
     }
